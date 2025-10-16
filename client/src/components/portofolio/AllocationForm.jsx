@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { usePortofolio } from "../../contexts/PortofolioContext";
-import { validateField, validateTotal } from "../../utils/validation";
+import { usePortofolio } from "../../contexts/PortofolioContext.jsx";
+import { validateField, validateTotal } from "../../utils/validation.js";
 
 const STRATEGIES = {
     conservative: {
@@ -50,9 +50,17 @@ const AllocationForm = () => {
         }
     };
 
+    const handleReset = () => {
+        setAllocations({ bonds: 0, stocks: 0, cash: 0 });
+        setAmount("");
+        setResults(null);
+        setError({});
+    };
+
     return (
         <div className="p-6 mt-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4">Portofolio Allocation</h2>
+            <h2 className="text-lg font-semibold mb-4">Portfolio Allocation</h2>
+            
             {/* //investment ampont input */}
             <div className="mb-4">
                 <label>Investment Amount</label>
@@ -66,6 +74,7 @@ const AllocationForm = () => {
 
                 />
             </div>
+
             {/* //allocation inputs bonds,stocks,cash*/}
             {Object.keys(allocations).map(key => (
                 <div key={key} className="mb-4">
@@ -84,10 +93,15 @@ const AllocationForm = () => {
             ))}
 
             {/* //total allocation display */}
-            <div className="p-2 text-center bg-gray-100 rounded-md">
-                <button onClick={handleCalculate} className="w-full p-2 text-white bg-gray-800 rounded-md">
+            <div className="p-2 center bg-sky-100 rounded-md border border-sky-300 ">
+                Total Allocation: {totalAllocation}% (must equal 100%)
+            </div>
+
+            {/* //buttons */}
+            <div className="p-2 text-center bg-gray-100 rounded-md flex space-x-4">
+                <button onClick={handleCalculate} className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-500 border border-transparent rounded-md shadow-sm hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
                     Calculate</button>
-                <button type="reset" className="w-full p-2 border border-gray-300 rounded-md">Reset</button>
+                <button type="reset" onClick={handleReset} className="w-full p-2 border border-gray-300 rounded-md">Reset</button>
             </div>
 
         </div>

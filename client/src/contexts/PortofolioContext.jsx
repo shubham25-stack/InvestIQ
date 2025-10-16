@@ -1,19 +1,18 @@
-import React,{ createContext,useState,useContext, Children, use } from "react";
+import React, { createContext, useState, useContext } from "react";
 
-const 
-PortofolioContext = createContext();
+const PortofolioContext = createContext();
 
 export const usePortofolio = () => useContext(PortofolioContext);
 
-export const PortofolioProvider = ({ Children }) =>{
+export const PortofolioProvider = ({ children }) => {
     const [strategy, setStrategy] = useState("");
     const [amount, setAmount] = useState("");
-    const [allocations,setAllocations] = useState({
-        bonds:0,
-        stocks:0,
-        cash:0,
+    const [allocations, setAllocations] = useState({
+        bonds: 0,
+        stocks: 0,
+        cash: 0,
     });
-    const [results,setResults] = useState(null);
+    const [results, setResults] = useState(null);
 
     const value = {
         strategy,
@@ -28,7 +27,7 @@ export const PortofolioProvider = ({ Children }) =>{
 
     return (
         <PortofolioContext.Provider value={value}>
-            {Children}
+            {children}
         </PortofolioContext.Provider>
-    )
-}
+    );
+};
