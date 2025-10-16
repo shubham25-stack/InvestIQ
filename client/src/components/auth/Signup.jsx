@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function Signup(){
     const [name, setName] = useState("");
@@ -6,7 +8,7 @@ function Signup(){
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if(!email || !password || !name || !confirmPassword){
@@ -22,8 +24,20 @@ function Signup(){
         // Handle signup logic here
         console.log("Signing up with: ",{name,email,password});
 
-        //write the logic of authentication and write again
-    }
+        try{
+            const config = {
+                headers:{"Content-Type":"application/json"},
+             };
+            await axios.post(
+                "https://localhost:5000/api/users/register",
+                {name,email,password},
+                config
+            );
+            navigate('/login');
+        } catch (error){
+            console.log(error.response.data.message);
+        }
+    };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
