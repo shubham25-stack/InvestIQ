@@ -1,90 +1,65 @@
-import React, {useState} from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
+const Signup = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signup } = useAuth();
+  const navigate = useNavigate();
 
-function Signup(){
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    if (!name || !email || !password) {
+      return setError('Please fill in all fields.');
+    }
 
-        if(!email || !password || !name || !confirmPassword){
-            alert("Please fill in all fields");
-            return;
-        }
+    try {
+      setLoading(true);
+      await signup(email, password, name);
+      // --- CORRECTED REDIRECTION ---
+      // On successful registration, redirect to the login page.
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create an account.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if(password !== confirmPassword){
-            alert("Passwords do not match");
-            return;
-        }
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-center">Create an Account</h1>
+        {error && <p className="p-3 text-center text-red-700 bg-red-100 rounded-md">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="font-medium">Name</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 mt-1 border rounded-md" required />
+          </div>
+          <div>
+            <label className="font-medium">Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 mt-1 border rounded-md" required />
+          </div>
+          <div>
+            <label className="font-medium">Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 mt-1 border rounded-md" required />
+          </div>
+          <button type="submit" disabled={loading} className="w-full py-2 font-bold text-white bg-indigo-600 rounded-md disabled:bg-indigo-300">
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </button>
+        </form>
+        <p className="text-sm text-center">
+          Already have an account? <Link to="/login" className="font-medium text-indigo-600">Sign in</Link>
+        </p>
+      </div>
+    </div>
+  );
+};
 
-        // Handle signup logic here
-        console.log("Signing up with: ",{name,email,password});
-
-        try{
-            const config = {
-                headers:{"Content-Type":"application/json"},
-             };
-            await axios.post(
-                "https://localhost:5000/api/users/register",
-                {name,email,password},
-                config
-            );
-            navigate('/login');
-        } catch (error){
-            console.log(error.response.data.message);
-        }
-    };
-
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            {/* //header */}
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-                <h1 className="text-3xl font-bold text-gray-900 text-center">
-                    Welcome Back!
-                </h1>
-                <p className="mt-2 text-sm text-gray-600 text-center">Please sign in your account</p>
-           
-
-            {/* //form */}
-            <form className="space-y-6" onSubmit={handleSubmit}>
-
-                {/* //take input for the name */}
-                <div><label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                <input id="name" name="name" type="name" autoComplete="name" required value={name} onChange={(event)=>setName(event.target.value)} className="w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Shiv Thakur"/>
-                </div>
-                {/* //take input for email */}
-                <div><label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-                <input id="email" name="email" type="email" autoComplete="email" required value={email} onChange={(event)=>setEmail(event.target.value)} className="w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="example@gmail.com"/>
-                </div>
-
-                {/* //take input for password */}
-                <div><label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" name="password" type="password" autoComplete="password" required value={password} onChange={(event)=>setPassword(event.target.value)} className="w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="********"/>
-                </div>
-
-                {/* //take input for confirm passoword */}
-                <div><label htmlFor="confirm password" className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                <input id="confirm password" name="confirm password" type="password" autoComplete="confirm password" required value={confirmPassword} onChange={(event)=>setConfirmPassword(event.target.value)} className="w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="********"/>
-                </div>
-
-                {/* //submit button */}
-                <div><button type="submit" className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-500 border border-transparent rounded-md shadow-sm hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
-                    Sign Up</button></div>
-
-                {/* //creating of paragraph that redirect to the sigup page */}
-                <p className="mt-4 text-sm text-center text-gray-600">Alredy have an account?{''}Sign In</p>
-                {/* <Link to ="/signup" className="font-medium text-indigo-600 hover:text-indigo-500"></Link> */}
-
-            </form>
-             </div>
-            
-        </div>
-    )
-}
-
-
-export default Signup
+export default Signup;
