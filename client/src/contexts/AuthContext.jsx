@@ -1,50 +1,83 @@
-import React, { createContext, useState, useEffect, useContext } from 'react'; // Add useContext here
-import axios from 'axios';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 
-// *** THIS IS THE FIX ***
-// Add 'export' to make this available for import in other files.
-export const AuthContext = createContext(null);
-
-// You can still have a custom hook for convenience
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('userInfo');
+    const storedUser = localStorage.getItem("userInfo");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const user = JSON.parse(storedUser);
+        setCurrentUser(user);
+      } catch (err) {
+        console.error("Error parsing stored user:", err);
+        localStorage.removeItem("userInfo");
+      }
     }
+    setLoading(false);
   }, []);
 
+  // Login function
   const login = async (email, password) => {
-    const { data } = await axios.post('http://localhost:5000/api/users/login', {
-      email,
-      password,
-    });
-    localStorage.setItem('userInfo', JSON.stringify(data));
-    setUser(data);
+    try {
+      const res = await axios.post("http://localhost:5000/api/users/login", {
+        email,
+        password,
+      });
+
+      const user = res.data;
+      localStorage.setItem("userInfo", JSON.stringify(user));
+      setCurrentUser(user);
+
+      return { success: true };
+    } catch (err) {
+      console.error("Login failed:", err);
+      return {
+        success: false,
+        message: err.response?.data?.message || "Login failed",
+      };
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('userInfo');
-    setUser(null);
-  };
-
+  // Signup function
   const signup = async (name, email, password) => {
-    await axios.post('http://localhost:5000/api/users/register', {
-      name,
-      email,
-      password,
-    });
+    try {
+      const res = await axios.post("http://localhost:5000/api/users/register", {
+        name,
+        email,
+        password,
+      });
+
+      const user = res.data;
+      localStorage.setItem("userInfo", JSON.stringify(user));
+      setCurrentUser(user);
+
+      return { success: true };
+    } catch (err) {
+      console.error("Signup failed:", err);
+      return {
+        success: false,
+        message: err.response?.data?.message || "Signup failed",
+      };
+    }
   };
 
-  const value = { user, login, logout, signup };
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("userInfo");
+    setCurrentUser(null);
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={{ currentUser, loading, login, signup, logout }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
 
-//you have to fix the signup 
+export const useAuth = () => useContext(AuthContext);
