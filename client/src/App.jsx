@@ -13,7 +13,7 @@ const AppRoutes = () => {
 
   // Show a loading screen while we check for a user session
   if (loading) {
-    return <div>Loading...</div>; // Or a proper spinner component
+    return <div>Loading...</div>;
   }
 
   return (

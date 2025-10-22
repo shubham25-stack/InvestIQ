@@ -1,10 +1,10 @@
 import React from "react";
 import { usePortofolio } from "../../contexts/PortofolioContext";
 
-const ResultsDisplay = () =>{
-    const { results,allocations } = usePortofolio();
+const ResultsDisplay = () => {
+    const { results, allocations } = usePortofolio();
 
-    if(!results){
+    if (!results) {
         return null;
     }
     return (
@@ -14,7 +14,7 @@ const ResultsDisplay = () =>{
                 <div className="p-4 bg-indigo-100 rounded-md">
                     <p className="text-indigo-600">Bonds</p>
                     <p className="text-2xl font-bold text-indigo-900">${results.bonds.toLocaleString()}</p>
-                    <p className="text-sm text-indigo-700">{allocations.bond}% of portofolio</p>
+                    <p className="text-sm text-indigo-700">{allocations.bonds}% of portofolio</p>
                 </div>
                 <div className="p-4 bg-blue-100 rounded-md">
                     <p className="text-blue-600">Stocks</p>

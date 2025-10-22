@@ -1,30 +1,34 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import userRoutes from "./routes/userRoutes.js";
-import connectDB from "./config/db.js";
+import express from 'express';
+import dotenv from 'dotenv';
 
 dotenv.config();
-connectDB(); // Connect to database
+
+import cors from 'cors';
+import userRoutes from './routes/userRoutes.js';
+import portfolioRoutes from './routes/portfolioRoutes.js';
+import connectDB from './config/db.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+
+//connecting db through env file
+connectDB(); 
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-
 app.use(cors());
-app.use(express.json()); // To parse JSON data
+app.use(express.json()); 
 
-app.use("/api/users", userRoutes);
+// API Routes
+app.use('/api/users', userRoutes);
+app.use('/api/portfolios', portfolioRoutes); 
 
-app.get("/", (req, res) => {
-  res.send("API is running...");
+app.get('/', (req, res) => {
+  res.send('API is running...');
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
+// Error Handlers
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
