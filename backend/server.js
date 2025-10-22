@@ -30,6 +30,9 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
+if(process.env.NODE_ENV !== "production"){ //condition for localhost
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+}
