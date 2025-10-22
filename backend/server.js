@@ -36,3 +36,5 @@ app.listen(port, () => {
 });
 
 }
+
+export default server;
