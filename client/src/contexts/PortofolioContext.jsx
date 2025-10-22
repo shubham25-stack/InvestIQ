@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+const API = import.meta.env.VITE_BACKEND_URL;
+
 
 const PortofolioContext = createContext();
 
@@ -38,9 +40,9 @@ export const PortofolioProvider = ({ children }) => {
             };
 
             const { data } = await axios.get(
-                'http://localhost:5000/api/portfolios',
-                config
-            );
+            `${API}/api/portfolios`,
+            config
+        );
             setPortfolioHistory(data);
         }
         catch (error) {
@@ -65,10 +67,10 @@ export const PortofolioProvider = ({ children }) => {
             };
 
             await axios.post(
-                'http://localhost:5000/api/portfolios',
-                portfolioData,
-                config
-            );
+            `${API}/api/portfolios`,
+            portfolioData,
+            config
+        );
 
             fetchPortofolioHistory();
         }

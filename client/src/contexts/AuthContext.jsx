@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+const API = import.meta.env.VITE_BACKEND_URL;
+
 
 export const AuthContext = createContext();
 
@@ -25,10 +27,11 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/users/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(`${API}/api/users/login`, {
+      email,
+      password,
+    });
+
 
       const user = res.data;
       localStorage.setItem("userInfo", JSON.stringify(user));
@@ -47,11 +50,11 @@ export const AuthProvider = ({ children }) => {
   // Signup function
   const signup = async (name, email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", {
-        name,
-        email,
-        password,
-      });
+      const res = await axios.post(`${API}/api/users/register`, {
+      name,
+      email,
+      password,
+    });
 
       const user = res.data;
       localStorage.setItem("userInfo", JSON.stringify(user));
